@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:myNewSchema
+    data: data.sql
+    schema: schema.sql
+
+#  h2:
+#    console:
+#      path: /h2-console
+#      settings:
+#        web-allow-others: true
