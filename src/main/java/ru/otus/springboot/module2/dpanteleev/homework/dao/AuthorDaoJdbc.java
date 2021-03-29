@@ -23,13 +23,13 @@ public class AuthorDaoJdbc implements AuthorDao {
     @Override
     public List<Author> getAllAuthor() {
         return namedParameterJdbcOperations
-                .query("Select * from AUTHOR", new AuthorMapper());
+                .query("Select id, full_name from AUTHOR", new AuthorMapper());
     }
 
     @Override
     public Author getAuthorById(long id) {
         return namedParameterJdbcOperations
-                .queryForObject("Select * from AUTHOR where id = :id"
+                .queryForObject("Select id, full_name from AUTHOR where id = :id"
                         , Map.of("id", id), new AuthorMapper());
     }
 

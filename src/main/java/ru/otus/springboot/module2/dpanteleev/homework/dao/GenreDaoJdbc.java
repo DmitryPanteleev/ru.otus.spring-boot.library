@@ -22,13 +22,13 @@ public class GenreDaoJdbc implements GenreDao{
     @Override
     public List<Genre> getAllGenre() {
         return namedParameterJdbcOperations
-                .query("Select * from GENRE", new GenreMapper());
+                .query("Select id, genre from GENRE", new GenreMapper());
     }
 
     @Override
     public Genre getGenreById(long id) {
         return namedParameterJdbcOperations
-                .queryForObject("Select * from GENRE where id = :id"
+                .queryForObject("Select id, genre from GENRE where id = :id"
                         , Map.of("id", id), new GenreMapper());
     }
 

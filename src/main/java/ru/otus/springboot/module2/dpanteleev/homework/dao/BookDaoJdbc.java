@@ -20,12 +20,11 @@ import java.util.Map;
 public class BookDaoJdbc implements BookDao {
 
     private final NamedParameterJdbcOperations namedParameterJdbcOperations;
-    private final AuthorDao authorDao;
+
     private final GenreBookDaoJdbc genreBookDaoJdbc;
 
-    public BookDaoJdbc(NamedParameterJdbcOperations namedParameterJdbcOperations, AuthorDao authorDao, GenreDao genreDao, GenreBookDaoJdbc genreBookDaoJdbc) {
+    public BookDaoJdbc(NamedParameterJdbcOperations namedParameterJdbcOperations, GenreBookDaoJdbc genreBookDaoJdbc) {
         this.namedParameterJdbcOperations = namedParameterJdbcOperations;
-        this.authorDao = authorDao;
         this.genreBookDaoJdbc = genreBookDaoJdbc;
     }
 
@@ -33,14 +32,16 @@ public class BookDaoJdbc implements BookDao {
     @Override
     public List<Book> getAllBook() {
         return namedParameterJdbcOperations
-                .query("Select * from BOOK", new BookMapper(authorDao, genreBookDaoJdbc));
+                .query("Select id, book_name, author from BOOK", new BookMapper(genreBookDaoJdbc));
     }
 
     @Override
     public Book getBookById(long id) {
         return namedParameterJdbcOperations
-                .queryForObject("Select * from BOOK where id = :id"
-                        , Map.of("id", id), new BookMapper(authorDao, genreBookDaoJdbc));
+                .queryForObject("Select b.id, b.book_name, b.author, a.id as aid, a.full_name from BOOK b " +
+                                "left join author a on a.id = b.author" +
+                                " where id = :id"
+                        , Map.of("id", id), new BookMapper(genreBookDaoJdbc));
     }
 
     @Override
@@ -72,11 +73,9 @@ public class BookDaoJdbc implements BookDao {
 
     private static class BookMapper implements RowMapper<Book> {
 
-        private final AuthorDao authorDao;
         private final GenreBookDaoJdbc genreBookDaoJdbc;
 
-        private BookMapper(AuthorDao authorDao, GenreBookDaoJdbc genreBookDaoJdbc) {
-            this.authorDao = authorDao;
+        public BookMapper(GenreBookDaoJdbc genreBookDaoJdbc) {
             this.genreBookDaoJdbc = genreBookDaoJdbc;
         }
 
@@ -84,7 +83,8 @@ public class BookDaoJdbc implements BookDao {
         public Book mapRow(ResultSet resultSet, int i) throws SQLException {
             long id = resultSet.getLong("id");
             String book = resultSet.getString("book_name");
-            Author author = authorDao.getAuthorById(resultSet.getLong("author"));
+
+            Author author = new Author(resultSet.getLong("aid"), resultSet.getString("full_name"));
             List<Genre> genreList = genreBookDaoJdbc.genresBookList(id);
             return new Book(id, book, author, genreList);
         }
