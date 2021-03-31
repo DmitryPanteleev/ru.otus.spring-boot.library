@@ -1,26 +1,35 @@
-DROP TABLE IF EXISTS BOOK;
-DROP TABLE IF EXISTS AUTHOR;
-DROP TABLE IF EXISTS GENRE;
+drop table if exists author CASCADE ;
+drop table if exists book CASCADE ;
+drop table if exists book_genre CASCADE ;
+drop table if exists comment CASCADE ;
+drop table if exists genre CASCADE ;
 
-CREATE TABLE AUTHOR
-(
-    id        BIGINT PRIMARY KEY auto_increment ,
-    `full_name` VARCHAR(255) unique
+create table author (
+    id bigint auto_increment,
+    full_name varchar(255) unique not null,
+    primary key (id)
 );
 
-CREATE TABLE GENRE
-(
-    id    BIGINT PRIMARY KEY auto_increment,
-    `genre` VARCHAR(255) unique
+create table genre (
+    id bigint auto_increment,
+    genre varchar(255)unique not null,
+    primary key (id)
 );
 
-CREATE TABLE BOOK
-(
-    id        BIGINT PRIMARY KEY auto_increment,
-    `book_name` VARCHAR(255),
-    `author`    BIGINT,
-     foreign key (`author`) references AUTHOR (`id`)
+create table book (
+    id bigint primary key auto_increment,
+    book_name varchar(255) not null,
+    author bigint references author(id)
 );
 
-create TABLE BOOK_GENRE ( `book` BIGINT , `genre` BIGINT ,
- foreign key (`book`) references BOOK (`id`), foreign key (`genre`) references GENRE (`id`))
+create table comment (
+    id bigint primary key auto_increment,
+    comment varchar(255) not null,
+    book_id bigint references book(id) on DELETE CASCADE
+);
+
+create table book_genre (
+    book_id bigint references book(id) on DELETE CASCADE,
+    genre_id bigint references genre (id),
+    primary key (book_id, genre_id)
+);

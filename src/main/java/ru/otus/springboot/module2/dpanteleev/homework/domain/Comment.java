@@ -7,21 +7,24 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "comment")
 @Entity
-@Table(name = "genre")
-public class Genre {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "genre", nullable = false)
-    private String genre;
+    @Column(name = "comment", nullable = false)
+    private String comment;
+
+    @Column(name = "book_id", nullable = false)
+    private long bookId;
 
     @Override
     public String toString(){
-        return genre;
+        return comment;
     }
 }

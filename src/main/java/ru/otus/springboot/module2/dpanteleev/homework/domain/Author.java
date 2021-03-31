@@ -1,12 +1,23 @@
 package ru.otus.springboot.module2.dpanteleev.homework.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
+import javax.persistence.*;
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "author")
 public class Author {
-    private final long id;
-    private final String fullName;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "full_name", nullable = false, unique = true)
+    private String fullName;
 }
 

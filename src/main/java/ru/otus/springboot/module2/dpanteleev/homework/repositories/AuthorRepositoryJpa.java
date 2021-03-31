@@ -1,13 +1,13 @@
-package ru.otus.springboot.module2.dpanteleev.homework.service;
+package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Author;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AuthorService {
+public interface AuthorRepositoryJpa {
 
-    Author create(String fullName);
+    Author save(Author author);
     Optional<Author> findById(long id);
 
     List<Author> findAll();
@@ -15,5 +15,4 @@ public interface AuthorService {
 
     void updateNameById(long id, String name);
     void deleteById(long id);
-
 }

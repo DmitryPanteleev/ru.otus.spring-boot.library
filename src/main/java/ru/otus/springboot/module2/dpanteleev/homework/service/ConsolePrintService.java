@@ -9,6 +9,7 @@ import java.util.List;
 public class ConsolePrintService {
 
     public void printBookListToConsole(List<Book> bookList){
-        bookList.forEach(book -> System.out.println(book));
+        bookList.forEach(book -> System.out.println("Книга: " + book.getBookName() + " Автор: " + book.getAuthor().getFullName()
+                + " Жанры: " + book.getGenres().toString() + " " + " Комментарии: " + book.getComments().toString()));
     }
 }

@@ -1,38 +1,55 @@
 package ru.otus.springboot.module2.dpanteleev.homework.service;
 
 import org.springframework.stereotype.Service;
-import ru.otus.springboot.module2.dpanteleev.homework.dao.AuthorDao;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Author;
+import ru.otus.springboot.module2.dpanteleev.homework.repositories.AuthorRepositoryJpa;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
 
-    private final AuthorDao authorDao;
+    private final AuthorRepositoryJpa repositoryJpa;
 
-    public AuthorServiceImpl(AuthorDao authorDao) {
-        this.authorDao = authorDao;
+    public AuthorServiceImpl(AuthorRepositoryJpa repositoryJpa) {
+        this.repositoryJpa = repositoryJpa;
     }
 
-
+    @Transactional
     @Override
-    public boolean isExist(String fullName) {
-        AtomicBoolean response = new AtomicBoolean(false);
-        authorDao.getAllAuthor().forEach(author -> {
-            if (author.getFullName().equals(fullName)) {
-                response.set(true);
-            }
-        });
-        return response.get();
+    public Author create(String fullName) {
+        return repositoryJpa.save(new Author(0, fullName));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Optional<Author> addAuthor(String fullName) {
-        if (!isExist(fullName)) {
-            authorDao.addAuthor(fullName);
-        }
-        return authorDao.getAllAuthor().stream().filter(author -> author.getFullName().equals(fullName)).findFirst();
+    public Optional<Author> findById(long id) {
+        return repositoryJpa.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Author> findAll() {
+        return repositoryJpa.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Author> findByName(String fullName) {
+        return repositoryJpa.findByName(fullName);
+    }
+
+    @Transactional
+    @Override
+    public void updateNameById(long id, String name) {
+        repositoryJpa.updateNameById(id, name);
+    }
+
+    @Transactional
+    @Override
+    public void deleteById(long id) {
+        repositoryJpa.deleteById(id);
     }
 }
