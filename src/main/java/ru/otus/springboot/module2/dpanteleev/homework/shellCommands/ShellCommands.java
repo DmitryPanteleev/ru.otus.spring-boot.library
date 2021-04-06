@@ -45,7 +45,12 @@ public class ShellCommands {
                 genreList.add("fake_genre" + j + i);
             }
             val book = bookService.create("fake_book_" + i, "fake_author_" + i, genreList);
-            commentServices.create("fake_comment_"+ i, book.getId());
+            commentServices.create("fake_comment_"+ i);
         }
+    }
+
+    @ShellMethod(key = {"addComment"}, value = "add comment: addComment comment, bookName")
+    public void addComment(String comment, String bookName){
+        if (!bookService.addComment(bookName, comment)) cps.printMessage("не найдена книга");
     }
 }

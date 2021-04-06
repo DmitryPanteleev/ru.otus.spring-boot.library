@@ -1,10 +1,13 @@
 package ru.otus.springboot.module2.dpanteleev.homework.service;
 
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
+import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Genre;
 import ru.otus.springboot.module2.dpanteleev.homework.repositories.BookRepositoryJpa;
+import ru.otus.springboot.module2.dpanteleev.homework.repositories.CommentRepositoryJpa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +19,13 @@ public class BookServiceImpl implements BookService {
     private final BookRepositoryJpa bookRepositoryJpa;
     private final AuthorService authorService;
     private final GenreService genreService;
+    private final CommentRepositoryJpa commentRepo;
 
-    public BookServiceImpl(BookRepositoryJpa repositoryJpa, AuthorService authorService, GenreService genreService, GenreService genreService1) {
+    public BookServiceImpl(BookRepositoryJpa repositoryJpa, AuthorService authorService, GenreService genreService, CommentRepositoryJpa comment) {
         this.bookRepositoryJpa = repositoryJpa;
         this.authorService = authorService;
-        this.genreService = genreService1;
+        this.genreService = genreService;
+        this.commentRepo = comment;
     }
 
     @Transactional
@@ -51,13 +56,28 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
+    public boolean addComment(String bookName, String newComment) {
+        val comment = commentRepo.save(new Comment(0, newComment));
+        Optional<Book> bookOption = Optional.of(bookRepositoryJpa.findByName(bookName).get(0));
+        if (bookOption.isPresent()){
+            List<Comment> commentList = bookOption.get().getComments();
+            commentList.add(comment);
+           bookOption.get().setComments(commentList);
+           return true;
+        }else {
+            return false;
+        }
+    }
+
+    @Transactional
+    @Override
     public void updateBookNameById(long id, String name) {
         bookRepositoryJpa.updateBookNameById(id, name);
     }
 
     @Transactional
     @Override
-    public void deleteById(long id) {
-        bookRepositoryJpa.deleteById(id);
+    public void delete(Book book) {
+        bookRepositoryJpa.delete(book);
     }
 }

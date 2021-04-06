@@ -44,12 +44,12 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     @Override
     public void updateNameById(long id, String name) {
-        repositoryJpa.updateNameById(id, name);
+        repositoryJpa.findById(id).get().setFullName(name);
     }
 
     @Transactional
     @Override
-    public void deleteById(long id) {
-        repositoryJpa.deleteById(id);
+    public void delete(Author author) {
+        repositoryJpa.delete(author);
     }
 }

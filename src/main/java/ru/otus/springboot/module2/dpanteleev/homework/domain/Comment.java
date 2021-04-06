@@ -20,9 +20,6 @@ public class Comment {
     @Column(name = "comment", nullable = false)
     private String comment;
 
-    @Column(name = "book_id", nullable = false)
-    private long bookId;
-
     @Override
     public String toString(){
         return comment;

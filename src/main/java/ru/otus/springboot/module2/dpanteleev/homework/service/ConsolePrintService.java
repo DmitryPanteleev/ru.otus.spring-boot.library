@@ -12,4 +12,8 @@ public class ConsolePrintService {
         bookList.forEach(book -> System.out.println("Книга: " + book.getBookName() + " Автор: " + book.getAuthor().getFullName()
                 + " Жанры: " + book.getGenres().toString() + " " + " Комментарии: " + book.getComments().toString()));
     }
+
+    public void printMessage(String message){
+        System.out.println(message);
+    }
 }

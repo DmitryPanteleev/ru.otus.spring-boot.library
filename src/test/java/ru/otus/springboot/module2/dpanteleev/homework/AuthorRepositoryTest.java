@@ -51,17 +51,6 @@ public class AuthorRepositoryTest {
         assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
     }
 
-    @DisplayName("меняет имя")
-    @Test
-    void shouldUpdateActualAuthor(){
-        String newName = "new name";
-        val actualAuthor = repo.save(new Author(0, "oldName"));
-        em.detach(actualAuthor);
-        repo.updateNameById(actualAuthor.getId(), newName);
-        val expectedAuthor = em.find(Author.class, actualAuthor.getId());
-        assertThat(newName).isEqualTo(expectedAuthor.getFullName());
-    }
-
     @DisplayName("Находит всех")
     @Test
     void shouldFindAllAuthors(){
@@ -74,7 +63,7 @@ public class AuthorRepositoryTest {
     void shouldDeleteAuthors(){
         val actualAuthor = repo.save(new Author(0, "deletedAuthors"));
         em.detach(actualAuthor);
-        repo.deleteById(actualAuthor.getId());
+        repo.delete(repo.findById(actualAuthor.getId()).get());
         val optionalActualAuthor = repo.findById(actualAuthor.getId());
         assertThat(optionalActualAuthor.isPresent()).isFalse();
     }

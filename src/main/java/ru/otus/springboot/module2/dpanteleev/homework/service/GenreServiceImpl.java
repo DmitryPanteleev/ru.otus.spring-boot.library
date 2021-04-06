@@ -50,7 +50,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Transactional
     @Override
-    public void deleteById(long id) {
-        genreRepositoryJpa.deleteById(id);
+    public void deleteById(Genre genre) {
+        genreRepositoryJpa.delete(genre);
     }
 }

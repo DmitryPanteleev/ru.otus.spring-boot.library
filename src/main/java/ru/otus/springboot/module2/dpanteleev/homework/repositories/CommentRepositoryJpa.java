@@ -14,5 +14,5 @@ public interface CommentRepositoryJpa {
     List<Comment> findByComment(String comment);
 
     void updateCommentById(long id, String comment);
-    void deleteById(long id);
+    void delete(Comment comment);
 }

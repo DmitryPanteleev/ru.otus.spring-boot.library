@@ -19,8 +19,8 @@ public class CommentServicesImpl implements CommentServices {
 
     @Transactional
     @Override
-    public Comment create(String comment, long bookId) {
-        return repo.save(new Comment(0, comment, bookId));
+    public Comment create(String comment) {
+        return repo.save(new Comment(0, comment));
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +49,7 @@ public class CommentServicesImpl implements CommentServices {
 
     @Transactional
     @Override
-    public void deleteById(long id) {
-        repo.deleteById(id);
+    public void deleteById(Comment comment) {
+        repo.delete(comment);
     }
 }

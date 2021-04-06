@@ -14,5 +14,5 @@ public interface GenreService {
     List<Genre> findByName(String genreName);
 
     void updateGenreById(long id, String genre);
-    void deleteById(long id);
+    void deleteById(Genre genre);
 }

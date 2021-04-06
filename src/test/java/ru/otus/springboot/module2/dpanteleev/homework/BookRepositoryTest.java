@@ -62,8 +62,8 @@ public class BookRepositoryTest {
         val actualBook = repo.save(new Book(0, "second book",
                 new Author(0, "author"),
                 List.of(new Genre(0, "genre"), new Genre(0, "genre2")), null));
-        comment.save(new Comment(0, "comment", actualBook.getId()));
-        comment.save(new Comment(0, "comment2", actualBook.getId()));
+        comment.save(new Comment(0, "comment"));
+        comment.save(new Comment(0, "comment2"));
 //        em.detach(actualBook);
         System.out.println(actualBook);
         val expectedBook = em.find(Book.class, actualBook.getId());
@@ -78,8 +78,8 @@ public class BookRepositoryTest {
         val actualBook = repo.save(new Book(0, "second book",
                 new Author(0, "author"),
                 List.of(new Genre(0, "genre"), new Genre(0, "genre2")), null));
-        comment.save(new Comment(0, "comment", actualBook.getId()));
-        comment.save(new Comment(0, "comment2", actualBook.getId()));
+        comment.save(new Comment(0, "comment"));
+        comment.save(new Comment(0, "comment2"));
         em.detach(actualBook);
         repo.updateBookNameById(actualBook.getId(), newName);
         val expectedBook = em.find(Book.class, actualBook.getId());
@@ -99,10 +99,10 @@ public class BookRepositoryTest {
         val actualBook = repo.save(new Book(0, "second book",
                 new Author(0, "author"),
                 List.of(new Genre(0, "genre"), new Genre(0, "genre2")), null));
-        comment.save(new Comment(0, "comment", actualBook.getId()));
-        comment.save(new Comment(0, "comment2", actualBook.getId()));
+        comment.save(new Comment(0, "comment"));
+        comment.save(new Comment(0, "comment2"));
         em.detach(actualBook);
-        repo.deleteById(actualBook.getId());
+        repo.delete(repo.findById(actualBook.getId()).get());
         val optionalActualBook = repo.findById(actualBook.getId());
         assertThat(optionalActualBook.isPresent()).isFalse();
     }

@@ -72,9 +72,10 @@ public class GenreRepositoryTest {
     @DisplayName("удаляет жанр")
     @Test
     void shouldDeleteAuthors(){
-        val actualGenre = repo.save(new Genre(0, "deletedGenre"));
+        val genreName = "deletedGenre";
+        val actualGenre = repo.save(new Genre(0, genreName));
         em.detach(actualGenre);
-        repo.deleteById(actualGenre.getId());
+        repo.delete(repo.findByName(genreName).get(0));
         val optionalActualGenre = repo.findById(actualGenre.getId());
         assertThat(optionalActualGenre.isPresent()).isFalse();
     }

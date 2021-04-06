@@ -46,7 +46,7 @@ public class CommentRepositoryTest {
     @DisplayName("Создаёт новый коммент")
     @Test
     void shouldAddExpectedGenre() {
-        val actualComment = repo.save(new Comment(0, "second comment", 1));
+        val actualComment = repo.save(new Comment(0, "second comment"));
         val expectedComment = em.find(Comment.class, actualComment.getId());
         assertThat(actualComment).usingRecursiveComparison().isEqualTo(expectedComment);
     }
@@ -55,7 +55,7 @@ public class CommentRepositoryTest {
     @Test
     void shouldUpdateActualGenre(){
         String newName = "new comment";
-        val actualComment = repo.save(new Comment(0, "oldComment", 1));
+        val actualComment = repo.save(new Comment(0, "oldComment"));
         em.detach(actualComment);
         repo.updateCommentById(actualComment.getId(), newName);
         val expectedComment = em.find(Comment.class, actualComment.getId());
@@ -72,9 +72,10 @@ public class CommentRepositoryTest {
     @DisplayName("удаляет комментарий")
     @Test
     void shouldDeleteAuthors(){
-        val actualComment = repo.save(new Comment(0, "deletedComment", 1));
+        val comment = "deletedComment";
+        val actualComment = repo.save(new Comment(0, comment));
         em.detach(actualComment);
-        repo.deleteById(actualComment.getId());
+        repo.delete(repo.findByComment(comment).get(0));
         val optionalActualComment = repo.findById(actualComment.getId());
         assertThat(optionalActualComment.isPresent()).isFalse();
     }
