@@ -14,7 +14,7 @@ public interface BookService {
     Optional<Book> findById(long id);
 
     List<Book> findAll();
-    List<Book> findByName(String bookName);
+    List<Optional<Book>> findByName(String bookName);
     boolean addComment(String bookName, String newComment);
     void updateBookNameById(long id, String bookName);
     void delete(Book book);

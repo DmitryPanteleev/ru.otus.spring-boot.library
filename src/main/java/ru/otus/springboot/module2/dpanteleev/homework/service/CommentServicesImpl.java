@@ -1,5 +1,6 @@
 package ru.otus.springboot.module2.dpanteleev.homework.service;
 
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
@@ -38,13 +39,15 @@ public class CommentServicesImpl implements CommentServices {
     @Transactional(readOnly = true)
     @Override
     public List<Comment> findByComment(String comment) {
-        return repo.findByComment(comment);
+        return repo.findCommentByComment(comment);
     }
 
     @Transactional
     @Override
     public void updateCommentById(long id, String comment) {
-        repo.updateCommentById(id, comment);
+       val entityComment =  repo.findById(id);
+        entityComment.ifPresent(value -> value.setComment(comment));
+       repo.saveAndFlush(entityComment.get());
     }
 
     @Transactional
