@@ -85,4 +85,11 @@ public class BookServiceImpl implements BookService {
     public void delete(Book book) {
         bookRepositoryJpa.delete(book);
     }
+
+    @Override
+    public List<Comment> getAllComments(long bookId) {
+        if (findById(bookId).isPresent()){
+            return findById(bookId).get().getComments();
+        }else return List.of();
+    }
 }

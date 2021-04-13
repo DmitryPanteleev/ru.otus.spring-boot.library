@@ -45,9 +45,9 @@ public class CommentServicesImpl implements CommentServices {
     @Transactional
     @Override
     public void updateCommentById(long id, String comment) {
-       val entityComment =  repo.findById(id);
+        val entityComment = repo.findById(id);
         entityComment.ifPresent(value -> value.setComment(comment));
-       repo.saveAndFlush(entityComment.get());
+        repo.saveAndFlush(entityComment.get());
     }
 
     @Transactional
@@ -55,4 +55,5 @@ public class CommentServicesImpl implements CommentServices {
     public void deleteById(Comment comment) {
         repo.delete(comment);
     }
+
 }

@@ -53,4 +53,9 @@ public class ShellCommands {
     public void addComment(String comment, String bookName){
         if (!bookService.addComment(bookName, comment)) cps.printMessage("не найдена книга");
     }
+
+    @ShellMethod(key = {"getComments"}, value = "get all comment")
+    public void getAllComments(long bookId){
+        cps.printMessage(bookService.getAllComments(bookId).toString());
+    }
 }

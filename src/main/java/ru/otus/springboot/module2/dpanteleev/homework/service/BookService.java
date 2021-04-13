@@ -2,6 +2,7 @@ package ru.otus.springboot.module2.dpanteleev.homework.service;
 
 import org.springframework.stereotype.Service;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
+import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,5 +19,5 @@ public interface BookService {
     boolean addComment(String bookName, String newComment);
     void updateBookNameById(long id, String bookName);
     void delete(Book book);
-
+    List<Comment> getAllComments(long bookId);
 }
