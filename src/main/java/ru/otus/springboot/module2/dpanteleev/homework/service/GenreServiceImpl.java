@@ -1,5 +1,6 @@
 package ru.otus.springboot.module2.dpanteleev.homework.service;
 
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Genre;
@@ -39,13 +40,16 @@ public class GenreServiceImpl implements GenreService {
     @Transactional(readOnly = true)
     @Override
     public List<Genre> findByName(String genreName) {
-        return genreRepositoryJpa.findByName(genreName);
+        return genreRepositoryJpa.findGenreByGenre(genreName);
     }
 
     @Transactional
     @Override
     public void updateGenreById(long id, String genre) {
-        genreRepositoryJpa.updateGenreNameById(id, genre);
+        val entityGenre = genreRepositoryJpa.findById(id);
+        entityGenre.ifPresent(value -> value.setGenre(genre));
+        genreRepositoryJpa.saveAndFlush(entityGenre.get());
+
     }
 
     @Transactional

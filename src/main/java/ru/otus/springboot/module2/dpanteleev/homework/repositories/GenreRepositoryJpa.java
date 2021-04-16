@@ -1,18 +1,13 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Genre;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface GenreRepositoryJpa {
+public interface GenreRepositoryJpa extends JpaRepository<Genre, Long> {
 
-    Genre save(Genre genre);
-    Optional<Genre> findById(long id);
+    List<Genre> findGenreByGenre(String genre);
 
-    List<Genre> findAll();
-    List<Genre> findByName(String genre);
-
-    void updateGenreNameById(long id, String genre);
-    void delete(Genre genre);
+    void deleteGenreByGenre(String genre);
 }

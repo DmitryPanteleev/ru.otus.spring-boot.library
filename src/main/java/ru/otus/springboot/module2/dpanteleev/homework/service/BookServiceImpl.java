@@ -50,34 +50,46 @@ public class BookServiceImpl implements BookService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Book> findByName(String fullName) {
-        return bookRepositoryJpa.findByName(fullName);
+    public List<Optional<Book>> findByName(String fullName) {
+        return bookRepositoryJpa.findBookByBookName(fullName);
     }
 
     @Transactional
     @Override
     public boolean addComment(String bookName, String newComment) {
         val comment = commentRepo.save(new Comment(0, newComment));
-        Optional<Book> bookOption = Optional.of(bookRepositoryJpa.findByName(bookName).get(0));
-        if (bookOption.isPresent()){
-            List<Comment> commentList = bookOption.get().getComments();
+        val bookOption = bookRepositoryJpa.findBookByBookName(bookName);
+        if (bookOption.get(0).isPresent()) {
+            List<Comment> commentList = bookOption.get(0).get().getComments();
             commentList.add(comment);
-           bookOption.get().setComments(commentList);
-           return true;
-        }else {
+            bookOption.get(0).get().setComments(commentList);
+            bookRepositoryJpa.saveAndFlush(bookOption.get(0).get());
+            return true;
+        } else {
             return false;
         }
     }
 
     @Transactional
     @Override
-    public void updateBookNameById(long id, String name) {
-        bookRepositoryJpa.updateBookNameById(id, name);
+    public void updateBookNameById(long id, String bookName) {
+        val book = bookRepositoryJpa.findById(id);
+        if (book.isPresent()) {
+            book.get().setBookName(bookName);
+            bookRepositoryJpa.save(book.get());
+        }
     }
 
     @Transactional
     @Override
     public void delete(Book book) {
         bookRepositoryJpa.delete(book);
+    }
+
+    @Override
+    public List<Comment> getAllComments(long bookId) {
+        if (findById(bookId).isPresent()){
+            return findById(bookId).get().getComments();
+        }else return List.of();
     }
 }

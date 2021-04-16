@@ -1,18 +1,17 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface BookRepositoryJpa {
+public interface BookRepositoryJpa extends JpaRepository<Book, Long> {
 
-    Book save(Book book);
-    Optional<Book> findById(long id);
+    List<Optional<Book>> findBookByBookName(String bookName);
 
-    List<Book> findAll();
-    List<Book> findByName(String bookName);
+    List<Book> findBookByAuthor_FullName(String authorFullName);
 
-    void updateBookNameById(long id, String bookName);
-    void delete(Book book);
+    void deleteBookByBookName(String bookName);
+
 }

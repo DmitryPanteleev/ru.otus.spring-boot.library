@@ -1,17 +1,15 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Author;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface AuthorRepositoryJpa {
+public interface AuthorRepositoryJpa extends JpaRepository<Author, Long> {
 
-    Author save(Author author);
-    Optional<Author> findById(long id);
+    List<Author> findAuthorByFullName(String fullName);
 
-    List<Author> findAll();
-    List<Author> findByName(String fullName);
+    void deleteAuthorByFullName(String fullName);
 
-    void delete(Author author);
+
 }

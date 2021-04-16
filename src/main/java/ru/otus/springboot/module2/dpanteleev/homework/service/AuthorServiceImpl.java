@@ -38,7 +38,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional(readOnly = true)
     @Override
     public List<Author> findByName(String fullName) {
-        return repositoryJpa.findByName(fullName);
+        return repositoryJpa.findAuthorByFullName(fullName);
     }
 
     @Transactional

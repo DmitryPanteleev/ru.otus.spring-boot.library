@@ -1,18 +1,13 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface CommentRepositoryJpa {
+public interface CommentRepositoryJpa extends JpaRepository<Comment, Long> {
 
-    Comment save(Comment comment);
-    Optional<Comment> findById(long id);
+    List<Comment> findCommentByComment(String comment);
 
-    List<Comment> findAll();
-    List<Comment> findByComment(String comment);
-
-    void updateCommentById(long id, String comment);
-    void delete(Comment comment);
+    void deleteCommentByComment(String comment);
 }
