@@ -3,6 +3,7 @@ package ru.otus.springboot.module2.dpanteleev.homework.service;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.springboot.module2.dpanteleev.homework.domain.Author;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Genre;
@@ -32,13 +33,27 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book create(String bookName, String authorName, List<String> genres) {
         List<Genre> genreList = new ArrayList();
-        genres.forEach(s -> genreList.add(genreService.create(s)));
-        return bookRepositoryJpa.save(new Book(0, bookName, authorService.create(authorName), genreList, null));
+        genres.forEach(s -> {
+            Genre g;
+            if (genreService.findByName(s).isEmpty()) {
+                g = genreService.create(s);
+            }else {
+                g = genreService.findByName(s).get(0);
+            }
+            genreList.add(g);
+        });
+        Author author;
+        if (authorService.findByName(authorName).isEmpty()){
+            author = authorService.create(authorName);
+        } else {
+            author = authorService.findByName(authorName).get(0);
+        }
+        return bookRepositoryJpa.save(new Book(bookName, author, genreList));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Book> findById(long id) {
+    public Optional<Book> findById(String id) {
         return bookRepositoryJpa.findById(id);
     }
 
@@ -50,20 +65,16 @@ public class BookServiceImpl implements BookService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Optional<Book>> findByName(String fullName) {
+    public List<Book> findByName(String fullName) {
         return bookRepositoryJpa.findBookByBookName(fullName);
     }
 
     @Transactional
     @Override
     public boolean addComment(String bookName, String newComment) {
-        val comment = commentRepo.save(new Comment(0, newComment));
         val bookOption = bookRepositoryJpa.findBookByBookName(bookName);
-        if (bookOption.get(0).isPresent()) {
-            List<Comment> commentList = bookOption.get(0).get().getComments();
-            commentList.add(comment);
-            bookOption.get(0).get().setComments(commentList);
-            bookRepositoryJpa.saveAndFlush(bookOption.get(0).get());
+        if (!bookOption.isEmpty()) {
+            commentRepo.save(new Comment(newComment, bookOption.get(0).getId()));
             return true;
         } else {
             return false;
@@ -72,7 +83,7 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public void updateBookNameById(long id, String bookName) {
+    public void updateBookNameById(String id, String bookName) {
         val book = bookRepositoryJpa.findById(id);
         if (book.isPresent()) {
             book.get().setBookName(bookName);
@@ -87,9 +98,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Comment> getAllComments(long bookId) {
-        if (findById(bookId).isPresent()){
-            return findById(bookId).get().getComments();
-        }else return List.of();
+    public List<Comment> getBookAllComments(String bookName) {
+        if (!findByName(bookName).isEmpty()) {
+            return commentRepo.findCommentByBookId(findByName(bookName).get(0).getId());
+        } else return List.of();
     }
 }

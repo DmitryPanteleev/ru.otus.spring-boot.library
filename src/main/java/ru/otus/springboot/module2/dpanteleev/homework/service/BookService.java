@@ -12,12 +12,12 @@ public interface BookService {
 
 
     Book create(String bookName, String authorName, List<String> genres);
-    Optional<Book> findById(long id);
+    Optional<Book> findById(String id);
 
     List<Book> findAll();
-    List<Optional<Book>> findByName(String bookName);
+    List<Book> findByName(String bookName);
     boolean addComment(String bookName, String newComment);
-    void updateBookNameById(long id, String bookName);
+    void updateBookNameById(String id, String bookName);
     void delete(Book book);
-    List<Comment> getAllComments(long bookId);
+    List<Comment> getBookAllComments(String bookName);
 }

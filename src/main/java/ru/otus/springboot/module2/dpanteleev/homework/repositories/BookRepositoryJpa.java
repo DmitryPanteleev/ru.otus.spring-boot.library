@@ -1,17 +1,20 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface BookRepositoryJpa extends JpaRepository<Book, Long> {
+public interface BookRepositoryJpa extends MongoRepository<Book, String> {
 
-    List<Optional<Book>> findBookByBookName(String bookName);
+    List<Book> findBookByBookName(String bookName);
 
     List<Book> findBookByAuthor_FullName(String authorFullName);
 
+    List<Book> findBookByAuthorId(String authorId);
+
     void deleteBookByBookName(String bookName);
+
+    List<Book> findBookByGenresId(String genreId);
 
 }

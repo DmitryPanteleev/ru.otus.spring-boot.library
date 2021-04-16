@@ -20,12 +20,12 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     @Override
     public Author create(String fullName) {
-        return repositoryJpa.save(new Author(0, fullName));
+        return repositoryJpa.save(new Author(fullName));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Author> findById(long id) {
+    public Optional<Author> findById(String id) {
         return repositoryJpa.findById(id);
     }
 
@@ -43,7 +43,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Transactional
     @Override
-    public void updateNameById(long id, String name) {
+    public void updateNameById(String id, String name) {
         repositoryJpa.findById(id).get().setFullName(name);
     }
 
