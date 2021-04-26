@@ -20,13 +20,13 @@ public class CommentServicesImpl implements CommentServices {
 
     @Transactional
     @Override
-    public Comment create(String comment) {
-        return repo.save(new Comment(0, comment));
+    public Comment create(String comment, String bookId) {
+        return repo.save(new Comment(comment, bookId));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Comment> findById(long id) {
+    public Optional<Comment> findById(String id) {
         return repo.findById(id);
     }
 
@@ -44,10 +44,10 @@ public class CommentServicesImpl implements CommentServices {
 
     @Transactional
     @Override
-    public void updateCommentById(long id, String comment) {
+    public void updateCommentById(String id, String comment) {
         val entityComment = repo.findById(id);
         entityComment.ifPresent(value -> value.setComment(comment));
-        repo.saveAndFlush(entityComment.get());
+        repo.insert(entityComment.get());
     }
 
     @Transactional

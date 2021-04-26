@@ -1,23 +1,23 @@
 package ru.otus.springboot.module2.dpanteleev.homework.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name = "author")
+@Document(collection = "author")
 public class Author {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
-    @Column(name = "full_name", nullable = false, unique = true)
+    @NotNull
     private String fullName;
+
+    public Author(String fullName) {
+        this.fullName = fullName;
+    }
 }
 
