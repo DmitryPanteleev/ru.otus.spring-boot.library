@@ -47,4 +47,15 @@ public class BooksController {
         model.addAttribute(newBook);
         return "redirect:/";
     }
+
+    @PostMapping("/delete/book")
+    public String deleteBook(
+            @RequestParam("id") String id,
+            @RequestParam("button") String button,
+            Model model) {
+        if (button.equals("delete") && bookService.findById(id).isPresent()){
+            bookService.delete(bookService.findById(id).get());
+        }
+        return "redirect:/";
+    }
 }
