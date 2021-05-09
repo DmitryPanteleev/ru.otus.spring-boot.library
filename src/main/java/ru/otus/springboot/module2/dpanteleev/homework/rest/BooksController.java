@@ -23,20 +23,20 @@ public class BooksController {
         this.bookService = bookService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/books")
     public String listBooks(Model model) {
         List<Book> bookList = bookService.findAll();
         model.addAttribute("books", bookList);
         return "list";
     }
 
-    @GetMapping("/edit")
+    @GetMapping("/books/book/edit")
     public String editBook(@RequestParam("id") String id, Model model) {
         model.addAttribute("book", bookService.findById(id).orElseThrow(NotFoundBookException::new));
         return "edit";
     }
 
-    @PostMapping("/edit")
+    @PostMapping("/books/book/edit")
     public String saveBook(
             @RequestParam("id") String id,
             @RequestParam("bookName") String bookName,
@@ -45,10 +45,10 @@ public class BooksController {
             Model model) {
         val newBook = bookService.updateBook(id, bookName, author, genres);
         model.addAttribute(newBook);
-        return "redirect:/";
+        return "redirect:/books";
     }
 
-    @PostMapping("/delete/book")
+    @PostMapping("/books/book/delete")
     public String deleteBook(
             @RequestParam("id") String id,
             @RequestParam("button") String button,
@@ -56,6 +56,6 @@ public class BooksController {
         if (button.equals("delete") && bookService.findById(id).isPresent()){
             bookService.delete(bookService.findById(id).get());
         }
-        return "redirect:/";
+        return "redirect:/books";
     }
 }
