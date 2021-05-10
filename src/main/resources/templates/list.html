@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List all book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .books, td {
+            border: 1px solid #d6e9ff;
+            padding: 5px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: #a2ccff;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body id="body">
+<script>
+    const body = document.getElementById("body");
+    const h1 = document.createElement("h1");
+
+    /**
+     * Метод проверки что пришёл ответ
+     */
+    function status(response) {
+        if (response.status >= 200 && response.status < 300) {
+            return Promise.resolve(response)
+        } else {
+            return Promise.reject(new Error(response.statusText))
+        }
+    }
+
+    /**
+     * Возвращает json из ответа фетча
+     */
+    function json(response) {
+        return response.json()
+    }
+
+    /**
+     * Метод убирает все элементы с экрана
+     */
+    function removeBody() {
+        let list = body.childNodes;
+        for (let i = list.length - 1; i >= 0; i--) {
+            body.removeChild(list[i]);
+        }
+    }
+
+    /**
+     * Метод показывает все книги на страничке
+     */
+    function findAllBooks() {
+        fetch('/books')
+            .then(status)
+            .then(json)
+            .then(data => {
+                removeBody()
+                const table = document.createElement("table");
+                table.id = "table";
+                const tHead = table.createTHead();
+                const tBody = table.createTBody();
+                h1.innerText = "Books:";
+
+                let headThTitle = document.createElement("th");
+                let headThAuthor = document.createElement("th");
+                let headThGenres = document.createElement("th");
+
+                headThTitle.innerText = "Title";
+                headThAuthor.innerText = "Author";
+                headThGenres.innerText = "Genres";
+
+                let headTr = document.createElement("tr");
+                headTr.append(headThTitle, headThAuthor, headThGenres);
+                tHead.append(headTr);
+                data.forEach(function (v) {
+                    let tdBookName = document.createElement('td');
+                    let a = document.createElement('a')
+                    let tdAuthor = document.createElement('td');
+                    let tdGenres = document.createElement('td');
+                    a.text = v.bookName;
+                    tdBookName.append(a);
+                    tdAuthor.innerText = v.author.fullName;
+                    let genresName = [];
+                    v.genres.forEach((g) => {
+                        genresName.push(g.genre);
+                    });
+                    tdGenres.innerHTML = genresName;
+                    let tr = document.createElement("tr");
+                    let editButton = document.createElement("button");
+                    editButton.type = "button";
+                    editButton.name = "Edit";
+                    editButton.value = v.id;
+                    editButton.innerText = "Edit";
+                    editButton.onclick = editBook;
+                    tr.append(tdBookName, tdAuthor, tdGenres, editButton);
+                    tBody.append(tr);
+                });
+                body.append(h1, table)
+            })
+    }
+
+    /**
+     * Метод перестраивает страничку под редактирование книги
+     * @param event
+     */
+    function editBook(event) {
+        removeBody();
+        h1.innerText = "Edit:";
+        fetch("/books/book/edit?id=" + event.currentTarget.value)
+            .then(status)
+            .then(json)
+            .then(
+                function (data) {
+                    console.log(data);
+                    const bookName = document.createElement('div');
+                    const authorName = document.createElement('div');
+                    const genres = document.createElement('div');
+                    const buttons = document.createElement('div');
+                    const labelTitle = document.createElement('label');
+                    const labelAuthor = document.createElement('label');
+                    const labelGenres = document.createElement('label');
+                    const inputTitle = document.createElement('input');
+                    const inputAuthor = document.createElement('input');
+                    const inputGenres = document.createElement('input');
+                    bookName.className = "row";
+                    authorName.className = "row";
+                    genres.className = "row";
+
+                    labelTitle.innerText = "Title";
+                    labelAuthor.innerText = "Author";
+                    labelGenres.innerText = "Genres";
+
+                    inputTitle.value = data.bookName;
+                    inputAuthor.value = data.author.fullName;
+                    let genresName = [];
+                    data.genres.forEach((g) => {
+                        genresName.push(g.genre)
+                    });
+                    inputGenres.value = genresName.toString();
+
+                    bookName.append(labelTitle, inputTitle);
+                    authorName.append(labelAuthor, inputAuthor);
+                    genres.append(labelGenres, inputGenres);
+
+                    const buttonEdit = document.createElement('button');
+                    let id = data.id;
+                    buttonEdit.type = "button";
+                    buttonEdit.innerText = "Save";
+                    buttonEdit.onclick = () => {
+                        fetch("/books/book/save" +
+                            "?id=" + id +
+                            "&bookName=" + inputTitle.value +
+                            "&author=" + inputAuthor.value +
+                            "&genres=" + inputGenres.value, {method: "PATCH"}
+                        )
+                        buttonEdit.disabled;
+                        buttonDelete.disabled;
+                        setTimeout(findAllBooks, 100)
+                    }
+                    const buttonDelete = document.createElement('button');
+                    buttonDelete.type = "button";
+                    buttonDelete.innerText = "Delete";
+                    buttonDelete.onclick = () => {
+                        fetch("books/book/delete?id=" + id, {method: "DELETE"});
+                        buttonDelete.disabled;
+                        buttonEdit.disabled;
+                        setTimeout(findAllBooks, 100);
+                    }
+                    buttons.append(buttonEdit, buttonDelete);
+                    body.append(h1, bookName, authorName, genres, buttons);
+                }
+            )
+    }
+
+    findAllBooks();
+
+</script>
+</body>
+</html>
