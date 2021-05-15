@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 import ru.otus.springboot.module2.dpanteleev.homework.exceptions.NotFoundBookException;
+import ru.otus.springboot.module2.dpanteleev.homework.service.AuthorService;
 import ru.otus.springboot.module2.dpanteleev.homework.service.BookService;
 
 import java.util.List;
@@ -17,10 +18,12 @@ import java.util.List;
 public class BooksController {
 
     private final BookService bookService;
+    private final AuthorService authorService;
 
     @Autowired
-    public BooksController(BookService bookService) {
+    public BooksController(BookService bookService, AuthorService authorService) {
         this.bookService = bookService;
+        this.authorService = authorService;
     }
 
     @GetMapping("/books")
@@ -33,6 +36,7 @@ public class BooksController {
     @GetMapping("/books/book/edit")
     public String editBook(@RequestParam("id") String id, Model model) {
         model.addAttribute("book", bookService.findById(id).orElseThrow(NotFoundBookException::new));
+        model.addAttribute("authors", authorService.findAll());
         return "edit";
     }
 

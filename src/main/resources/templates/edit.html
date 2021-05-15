@@ -29,25 +29,31 @@
 
     <div class="row">
         <label for="title-input">Title:</label>
-        <input id="title-input" name="bookName" type="text" th:value="${book.bookName}" value="test-name"/>
+        <input id="title-input" name="bookName" th:value="${book.bookName}" type="text" value="test-name"/>
     </div>
 
     <div class="row">
         <label for="author-input">Author:</label>
-        <input id="author-input" name="author" type="text" th:value="${book.author.fullName}" value="test-author"/>
+        <!--        <input id="author-input" name="author" type="text" th:value="${book.author.fullName}" value="test-author"/>-->
+        <select th:name="author" >
+            <option disabled th:value="${book.author.fullName}" th:text="${book.author.fullName}" ></option>
+            <option th:selected="${(author.equals(book.author))}" id="author-input" th:each="author : ${authors}" th:text="${author.fullName}"
+                    th:value="${author.fullName}"></option>
+        </select>
     </div>
 
     <div class="row">
         <label for="genre-input">Genres:</label>
-        <input id="genre-input" name="genres" type="text" th:value="${book.genres}" value="genres-name"/>
+        <input id="genre-input" name="genres" th:value="${book.genres}" type="text" value="genres-name"/>
     </div>
 </form>
 
-<form id="delete-form" action="/books/book/delete" th:action="@{/books/book/delete(id=${book.id})}" th:method="post"></form>
+<form action="/books/book/delete" id="delete-form" th:action="@{/books/book/delete(id=${book.id})}"
+      th:method="post"></form>
 
 <div class="row">
-    <button type="submit" name="button" form="edit-form">Save</button>
-    <button type="submit" name="button" form="delete-form" value="delete">Delete</button>
+    <button form="edit-form" name="button" type="submit">Save</button>
+    <button form="delete-form" name="button" type="submit" value="delete">Delete</button>
 </div>
 
 </body>
