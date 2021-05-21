@@ -3,35 +3,21 @@ package ru.otus.springboot.module2.dpanteleev.homework.shellCommands;
 import lombok.val;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
-import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
-import ru.otus.springboot.module2.dpanteleev.homework.service.*;
+import ru.otus.springboot.module2.dpanteleev.homework.service.BookService;
+import ru.otus.springboot.module2.dpanteleev.homework.service.ConsolePrintService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @ShellComponent
 public class ShellCommands {
     private final BookService bookService;
     private final ConsolePrintService cps;
-    private final CommentServices commentServices;
-    private final GenreService genreService;
-    private final AuthorService authorService;
 
-    public ShellCommands(BookService bookService, ConsolePrintService cps, CommentServices commentServices, GenreService genreService, AuthorService authorService) {
+
+    public ShellCommands(BookService bookService, ConsolePrintService cps) {
         this.bookService = bookService;
         this.cps = cps;
-        this.commentServices = commentServices;
-        this.genreService = genreService;
-        this.authorService = authorService;
-    }
-
-    @ShellMethod(key = {"addBook"}, value = "Create book(bookName,bookAuthor,bookGenre/bookGenre/.../bookGenre)")
-    public void addBook(String bookName, String bookAuthor, String bookGenre) {
-        List<String> genreList = Arrays.asList(bookGenre.split("/"));
-        Book book = bookService.create(bookName, bookAuthor, genreList);
-        cps.printBookListToConsole(List.of(book));
     }
 
     @ShellMethod(key = {"findAll"}, value = "Print all books")

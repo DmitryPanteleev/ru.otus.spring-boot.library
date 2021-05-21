@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: #a2ccff;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<form action="edit.html" id="edit-form" th:action="@{/books/book/edit(id=${book.id})}" th:method="post">
+    <h1> Book info</h1>
+
+    <div class="row">
+        <label for="title-input">Title:</label>
+        <input id="title-input" name="bookName" th:value="${book.bookName}" type="text" value="test-name"/>
+    </div>
+
+    <div class="row">
+        <label for="author-input">Author:</label>
+        <!--        <input id="author-input" name="author" type="text" th:value="${book.author.fullName}" value="test-author"/>-->
+        <select th:name="author" >
+            <option disabled th:value="${book.author.fullName}" th:text="${book.author.fullName}" ></option>
+            <option th:selected="${(author.equals(book.author))}" id="author-input" th:each="author : ${authors}" th:text="${author.fullName}"
+                    th:value="${author.fullName}"></option>
+        </select>
+    </div>
+
+    <div class="row">
+        <label for="genre-input">Genres:</label>
+        <input id="genre-input" name="genres" th:value="${book.genres}" type="text" value="genres-name"/>
+    </div>
+</form>
+
+<form action="/books/book/delete" id="delete-form" th:action="@{/books/book/delete(id=${book.id})}"
+      th:method="post"></form>
+
+<div class="row">
+    <button form="edit-form" name="button" type="submit">Save</button>
+    <button form="delete-form" name="button" type="submit" value="delete">Delete</button>
+</div>
+
+</body>
+</html>
