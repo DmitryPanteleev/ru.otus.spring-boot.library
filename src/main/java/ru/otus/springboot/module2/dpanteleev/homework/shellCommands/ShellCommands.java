@@ -38,4 +38,27 @@ public class ShellCommands {
             }
         }
     }
+
+    @ShellMethod(key = {"addComment"}, value = "add comment: addComment bookName \"comment\"")
+    public void addComment(String bookName, @ShellOption(arity = 1) String comments) {
+        if (!bookService.addComment(bookName, comments)) cps.printMessage("не найдена книга");
+    }
+
+    @ShellMethod(key = {"getComments"}, value = "get all comment: getComments  bookName ")
+    public void getAllComments(String bookName) {
+        cps.printMessage(bookService.getBookAllComments(bookName).toString());
+    }
+
+    @ShellMethod(key = {"removeGenre"}, value = "removeGenre genreName")
+    public void removeGenre(String genreName) {
+        val genres = genreService.findByName(genreName);
+        genres.forEach(genreService::delete);
+    }
+
+    @ShellMethod(key = {"removeAuthor"}, value = "removeAuthor authorName")
+    public void removeAuthor(String authorName) {
+        val authors = authorService.findByName(authorName);
+        System.out.println(authors.toString());
+        authors.forEach(authorService::delete);
+    }
 }
