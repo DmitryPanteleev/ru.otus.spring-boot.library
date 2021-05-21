@@ -18,6 +18,7 @@ public interface BookService {
     List<Book> findByName(String bookName);
     boolean addComment(String bookName, String newComment);
     void updateBookNameById(String id, String bookName);
+    Book updateBook(String id, String bookName, String AuthorName, List<String> genres);
     void delete(Book book);
     List<Comment> getBookAllComments(String bookName);
 }
