@@ -3,6 +3,8 @@ package ru.otus.springboot.module2.dpanteleev.homework.service;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Author;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
@@ -13,7 +15,6 @@ import ru.otus.springboot.module2.dpanteleev.homework.repositories.CommentReposi
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -32,41 +33,41 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public Book create(String bookName, String authorName, List<String> genres) {
-        List<Genre> genreList = new ArrayList();
+    public Mono<Book> create(String bookName, String authorName, List<String> genres) {
+        List<Genre> genreList = new ArrayList<Genre>();
         genres.forEach(s -> {
 
-            if (genreService.findByName(s).isEmpty()) {
-                genreList.add( genreService.create(s));
+            if (genreService.findByName(s).hasElements().blockOptional().isPresent() && genreService.findByName(s).hasElements().blockOptional().get()) {
+                genreList.add(genreService.create(s).block());
             } else {
-                genreList.add( genreService.findByName(s).get(0));
+                genreList.add(genreService.findByName(s).blockFirst());
             }
 
         });
         Author author;
-        if (authorService.findByName(authorName).isEmpty()) {
-            author = authorService.create(authorName);
+        if (authorService.findByName(authorName).hasElements().blockOptional().isPresent() && authorService.findByName(authorName).hasElements().blockOptional().get()) {
+            author = authorService.create(authorName).block();
         } else {
-            author = authorService.findByName(authorName).get(0);
+            author = authorService.findByName(authorName).blockFirst();
         }
         return bookRepositoryJpa.save(new Book(bookName, author, genreList));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Book> findById(String id) {
+    public Mono<Book> findById(String id) {
         return bookRepositoryJpa.findById(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Book> findAll() {
+    public Flux<Book> findAll() {
         return bookRepositoryJpa.findAll();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Book> findByName(String fullName) {
+    public Flux<Book> findByName(String fullName) {
         return bookRepositoryJpa.findBookByBookName(fullName);
     }
 
@@ -74,8 +75,8 @@ public class BookServiceImpl implements BookService {
     @Override
     public boolean addComment(String bookName, String newComment) {
         val bookOption = bookRepositoryJpa.findBookByBookName(bookName);
-        if (!bookOption.isEmpty()) {
-            commentRepo.save(new Comment(newComment, bookOption.get(0).getId()));
+        if (bookOption.singleOrEmpty().blockOptional().isPresent()) {
+            commentRepo.save(new Comment(newComment, bookOption.blockFirst().getId()));
             return true;
         } else {
             return false;
@@ -86,48 +87,48 @@ public class BookServiceImpl implements BookService {
     @Override
     public void updateBookNameById(String id, String bookName) {
         val book = bookRepositoryJpa.findById(id);
-        if (book.isPresent()) {
-            book.get().setBookName(bookName);
-            bookRepositoryJpa.save(book.get());
+        if (book.blockOptional().isPresent()) {
+            book.blockOptional().get().setBookName(bookName);
+            bookRepositoryJpa.save(book.blockOptional().get());
         }
     }
 
     @Override
-    public Book updateBook(String id, String bookName, String authorName, List<String> genres) {
+    public Mono<Book> updateBook(String id, String bookName, String authorName, List<String> genres) {
         val genreList = new ArrayList<Genre>();
         val oldBook = bookRepositoryJpa.findById(id);
         // Проверим что редактируемая книга существует
-        if (!oldBook.isPresent()) {
+        if (oldBook.blockOptional().isEmpty()) {
             throw new NotFoundBookException();
         } else {
             // Проверяем переданного автора
             if (authorName != null) {
                 // ищем автора по имени если существует
-                if (!authorService.findByName(authorName).isEmpty()) {
-                    oldBook.get().setAuthor(authorService.findByName(authorName).get(0));
+                if (!authorService.findByName(authorName).hasElements().blockOptional().get()) {
+                    oldBook.blockOptional().get().setAuthor(authorService.findByName(authorName).blockFirst());
                 } else {
-                    oldBook.get().setAuthor(authorService.create(authorName));
+                    oldBook.blockOptional().get().setAuthor(authorService.create(authorName).block());
                 }
             }
         }
         // Если изменили имя обновим его
-        if (!oldBook.get().getBookName().equals(bookName)) {
-            oldBook.get().setBookName(bookName);
+        if (!oldBook.blockOptional().get().getBookName().equals(bookName)) {
+            oldBook.blockOptional().get().setBookName(bookName);
         }
         // Если поменяли жанр обновим их
         if (!genres.isEmpty()) {
             genres.forEach(g -> {
 //                Если пререданный жанр не существует создадим его
-                        if (genreService.findByName(g).isEmpty()) {
-                            genreList.add(genreService.create(g));
+                        if (genreService.findByName(g).hasElements().block()) {
+                            genreList.add(genreService.create(g).blockOptional().get());
                         } else {
-                            genreList.add(genreService.findByName(g).get(0));
+                            genreList.add(genreService.findByName(g).blockFirst());
                         }
                     }
             );
-            oldBook.get().setGenres(genreList);
+            oldBook.blockOptional().get().setGenres(genreList);
         }
-        return bookRepositoryJpa.save(oldBook.get());
+        return bookRepositoryJpa.save(oldBook.blockOptional().get());
     }
 
     @Transactional
@@ -137,9 +138,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Comment> getBookAllComments(String bookName) {
-        if (!findByName(bookName).isEmpty()) {
-            return commentRepo.findCommentByBookId(findByName(bookName).get(0).getId());
-        } else return List.of();
+    public Flux<Comment> getBookAllComments(String bookName) {
+        if (findByName(bookName).hasElements().block()) {
+            return commentRepo.findCommentByBookId(findByName(bookName).blockFirst().getId());
+        } else return Flux.empty();
     }
 }

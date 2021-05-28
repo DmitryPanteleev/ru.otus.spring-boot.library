@@ -1,15 +1,14 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 
-import java.util.List;
+public interface CommentRepositoryJpa extends ReactiveMongoRepository<Comment, String> {
 
-public interface CommentRepositoryJpa extends MongoRepository<Comment, String> {
+    Flux<Comment> findCommentByComment(String comment);
 
-    List<Comment> findCommentByComment(String comment);
-
-    List<Comment> findCommentByBookId(String bookId);
+    Flux<Comment> findCommentByBookId(String bookId);
 
     void deleteCommentByComment(String comment);
 }

@@ -1,20 +1,19 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 
-import java.util.List;
+public interface BookRepositoryJpa extends ReactiveMongoRepository<Book, String> {
 
-public interface BookRepositoryJpa extends MongoRepository<Book, String> {
+    Flux<Book> findBookByBookName(String bookName);
 
-    List<Book> findBookByBookName(String bookName);
+    Flux<Book> findBookByAuthor_FullName(String authorFullName);
 
-    List<Book> findBookByAuthor_FullName(String authorFullName);
-
-    List<Book> findBookByAuthorId(String authorId);
+    Flux<Book> findBookByAuthorId(String authorId);
 
     void deleteBookByBookName(String bookName);
 
-    List<Book> findBookByGenresId(String genreId);
+    Flux<Book> findBookByGenresId(String genreId);
 
 }

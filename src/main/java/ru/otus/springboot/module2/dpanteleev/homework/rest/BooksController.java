@@ -4,12 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 import ru.otus.springboot.module2.dpanteleev.homework.exceptions.NotFoundBookException;
-
+import ru.otus.springboot.module2.dpanteleev.homework.service.BookService;
 
 import java.util.List;
-
 
 @RestController
 public class BooksController {
@@ -22,14 +23,14 @@ public class BooksController {
     }
 
     @RequestMapping("/books")
-    public List<Book> getAllBooks() {
+    public Flux<Book> getAllBooks() {
         return bookService.findAll();
     }
 
     @RequestMapping("/books/book/edit")
-    public Book editBook(@RequestParam("id") String id) {
-        if (bookService.findById(id).isPresent()) {
-            return bookService.findById(id).get();
+    public Mono<Book> editBook(@RequestParam("id") String id) {
+        if (bookService.findById(id).blockOptional().isPresent()) {
+            return bookService.findById(id);
         } else {
             throw new NotFoundBookException();
         }
@@ -42,14 +43,14 @@ public class BooksController {
             @RequestParam("author") String author,
             @RequestParam("genres") List genres) {
         bookService.updateBook(id, bookName, author, genres);
-
     }
 
     @RequestMapping("/books/book/delete")
     public void deleteBook(
             @RequestParam("id") String id) {
-        if (bookService.findById(id).isPresent()) {
-            bookService.delete(bookService.findById(id).get());
+        if (bookService.findById(id).blockOptional().isPresent()) {
+            bookService.delete(bookService.findById(id).block());
         }
     }
 }
+
