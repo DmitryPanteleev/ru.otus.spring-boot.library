@@ -9,12 +9,12 @@ import ru.otus.springboot.module2.dpanteleev.homework.domain.Author;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Genre;
-import ru.otus.springboot.module2.dpanteleev.homework.exceptions.NotFoundBookException;
 import ru.otus.springboot.module2.dpanteleev.homework.repositories.BookRepositoryJpa;
 import ru.otus.springboot.module2.dpanteleev.homework.repositories.CommentRepositoryJpa;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -36,19 +36,18 @@ public class BookServiceImpl implements BookService {
     public Mono<Book> create(String bookName, String authorName, List<String> genres) {
         List<Genre> genreList = new ArrayList<Genre>();
         genres.forEach(s -> {
-
             if (genreService.findByName(s).hasElements().blockOptional().isPresent() && genreService.findByName(s).hasElements().blockOptional().get()) {
-                genreList.add(genreService.create(s).block());
-            } else {
                 genreList.add(genreService.findByName(s).blockFirst());
+            } else {
+                genreList.add(genreService.create(s).block());
             }
 
         });
         Author author;
         if (authorService.findByName(authorName).hasElements().blockOptional().isPresent() && authorService.findByName(authorName).hasElements().blockOptional().get()) {
-            author = authorService.create(authorName).block();
-        } else {
             author = authorService.findByName(authorName).blockFirst();
+        } else {
+            author = authorService.create(authorName).block();
         }
         return bookRepositoryJpa.save(new Book(bookName, author, genreList));
     }
@@ -97,44 +96,51 @@ public class BookServiceImpl implements BookService {
     public Mono<Book> updateBook(String id, String bookName, String authorName, List<String> genres) {
         val genreList = new ArrayList<Genre>();
         val oldBook = bookRepositoryJpa.findById(id);
-        // Проверим что редактируемая книга существует
-        if (oldBook.blockOptional().isEmpty()) {
-            throw new NotFoundBookException();
-        } else {
-            // Проверяем переданного автора
+        try {
+            val oldBookGet = oldBook.toFuture().get();
+//                Проверяем переданного автора
             if (authorName != null) {
                 // ищем автора по имени если существует
-                if (!authorService.findByName(authorName).hasElements().blockOptional().get()) {
-                    oldBook.blockOptional().get().setAuthor(authorService.findByName(authorName).blockFirst());
+                if (authorService.findByName(authorName).getPrefetch() > 0) {
+                    oldBookGet.setAuthor(authorService.findByName(authorName).collectList().toFuture().get().get(0));
                 } else {
-                    oldBook.blockOptional().get().setAuthor(authorService.create(authorName).block());
+                    oldBookGet.setAuthor(authorService.create(authorName).toFuture().get());
                 }
             }
-        }
-        // Если изменили имя обновим его
-        if (!oldBook.blockOptional().get().getBookName().equals(bookName)) {
-            oldBook.blockOptional().get().setBookName(bookName);
-        }
-        // Если поменяли жанр обновим их
-        if (!genres.isEmpty()) {
-            genres.forEach(g -> {
+            // Если изменили имя обновим его
+            if (!oldBookGet.getBookName().equals(bookName)) {
+                oldBookGet.setBookName(bookName);
+            }
+            // Если поменяли жанр обновим их
+            if (!genres.isEmpty()) {
+                genres.forEach(g -> {
 //                Если пререданный жанр не существует создадим его
-                        if (genreService.findByName(g).hasElements().block()) {
-                            genreList.add(genreService.create(g).blockOptional().get());
-                        } else {
-                            genreList.add(genreService.findByName(g).blockFirst());
+                            try {
+                                if (genreService.findByName(g).hasElements().toFuture().get()) {
+                                    genreList.add(genreService.create(g).toFuture().get());
+                                } else {
+                                    genreList.add(genreService.findByName(g).single().toFuture().get());
+                                }
+                            } catch (InterruptedException | ExecutionException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-            );
-            oldBook.blockOptional().get().setGenres(genreList);
+                );
+                oldBookGet.setGenres(genreList);
+            }
+            return bookRepositoryJpa.save(oldBookGet);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
         return bookRepositoryJpa.save(oldBook.blockOptional().get());
     }
 
     @Transactional
     @Override
-    public void delete(Book book) {
-        bookRepositoryJpa.delete(book);
+    public void delete(Mono<Book> book) throws ExecutionException, InterruptedException {
+        val b = book.toFuture().get();
+        val response = bookRepositoryJpa.delete(b);
+        response.toFuture().get();
     }
 
     @Override

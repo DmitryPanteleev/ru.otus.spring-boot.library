@@ -15,5 +15,4 @@ public interface BookRepositoryJpa extends ReactiveMongoRepository<Book, String>
     void deleteBookByBookName(String bookName);
 
     Flux<Book> findBookByGenresId(String genreId);
-
 }

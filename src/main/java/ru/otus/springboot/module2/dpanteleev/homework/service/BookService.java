@@ -7,6 +7,7 @@ import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public interface BookService {
@@ -19,7 +20,10 @@ public interface BookService {
     Flux<Book> findByName(String bookName);
     boolean addComment(String bookName, String newComment);
     void updateBookNameById(String id, String bookName);
+
     Mono<Book> updateBook(String id, String bookName, String AuthorName, List<String> genres);
-    void delete(Book book);
+
+    void delete(Mono<Book> book) throws ExecutionException, InterruptedException;
+
     Flux<Comment> getBookAllComments(String bookName);
 }

@@ -24,6 +24,5 @@ public class MongoCascadeDeleteGenreEventListener extends AbstractMongoEventList
                     return bookRepositoryJpa.save(book);
                 }
         );
-
     }
 }

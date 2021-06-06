@@ -2,7 +2,6 @@ package ru.otus.springboot.module2.dpanteleev.homework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
 @EnableWebFlux
@@ -10,7 +9,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 public class HomeworkApplication {
 
     public static void main(String[] args) {
-        ApplicationContext context = SpringApplication.run(HomeworkApplication.class, args);
+        SpringApplication.run(HomeworkApplication.class, args);
     }
 
 }
