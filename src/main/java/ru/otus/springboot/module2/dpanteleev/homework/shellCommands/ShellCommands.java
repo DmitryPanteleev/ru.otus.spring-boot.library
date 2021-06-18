@@ -22,7 +22,7 @@ public class ShellCommands {
 
     @ShellMethod(key = {"findAll"}, value = "Print all books")
     public void printAll() {
-        cps.printBookListToConsole(bookService.findAll());
+        cps.printBookListToConsole(bookService.findAll().collectList().block());
     }
 
     @ShellMethod(key = {"generate"}, value = "generate many new book")
@@ -34,7 +34,7 @@ public class ShellCommands {
                     genreList.add("fake_genre" + j + i);
                 }
                 val book = bookService.create("fake_book_" + i, "fake_author_" + i, genreList);
-                bookService.addComment(book.getBookName(), "fake_comment_" + i);
+                bookService.addComment(book.block().getBookName(), "fake_comment_" + i);
             }
         }
     }

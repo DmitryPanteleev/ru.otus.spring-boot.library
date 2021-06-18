@@ -3,11 +3,10 @@ package ru.otus.springboot.module2.dpanteleev.homework.service;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Genre;
 import ru.otus.springboot.module2.dpanteleev.homework.repositories.GenreRepositoryJpa;
-
-import java.util.List;
-import java.util.Optional;
 
 @Transactional
 @Service
@@ -21,25 +20,25 @@ public class GenreServiceImpl implements GenreService {
 
     @Transactional
     @Override
-    public Genre create(String genreName) {
+    public Mono<Genre> create(String genreName) {
         return genreRepositoryJpa.insert(new Genre(genreName));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Genre> findById(String id) {
+    public Mono<Genre> findById(String id) {
         return genreRepositoryJpa.findById(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Genre> findAll() {
+    public Flux<Genre> findAll() {
         return genreRepositoryJpa.findAll();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Genre> findByName(String genreName) {
+    public Flux<Genre> findByName(String genreName) {
         return genreRepositoryJpa.findGenreByGenre(genreName);
     }
 
@@ -47,8 +46,8 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public void updateGenreById(String id, String genre) {
         val entityGenre = genreRepositoryJpa.findById(id);
-        entityGenre.ifPresent(value -> value.setGenre(genre));
-        genreRepositoryJpa.insert(entityGenre.get());
+        entityGenre.blockOptional().get().setGenre(genre);
+        genreRepositoryJpa.insert(entityGenre.block());
 
     }
 

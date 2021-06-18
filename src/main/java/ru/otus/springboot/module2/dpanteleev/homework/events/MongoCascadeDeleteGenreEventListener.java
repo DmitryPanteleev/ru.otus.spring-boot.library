@@ -18,11 +18,11 @@ public class MongoCascadeDeleteGenreEventListener extends AbstractMongoEventList
     public void onAfterDelete(AfterDeleteEvent<Genre> event) {
         super.onAfterDelete(event);
         val bookList = bookRepositoryJpa.findBookByGenresId(event.getSource().get("_id").toString());
-        bookList.forEach(book -> {
-            val genres = book.getGenres();
-            genres.removeIf(it -> it.getId().equals(event.getSource().get("_id").toString()));
-            bookRepositoryJpa.save(book);
-        });
-
+        bookList.flatMap(book -> {
+                    val genres = book.getGenres();
+                    genres.removeIf(it -> it.getId().equals(event.getSource().get("_id").toString()));
+                    return bookRepositoryJpa.save(book);
+                }
+        );
     }
 }

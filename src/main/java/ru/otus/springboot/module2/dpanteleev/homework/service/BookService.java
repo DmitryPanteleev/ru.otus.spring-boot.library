@@ -1,24 +1,29 @@
 package ru.otus.springboot.module2.dpanteleev.homework.service;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public interface BookService {
 
 
-    Book create(String bookName, String authorName, List<String> genres);
-    Optional<Book> findById(String id);
+    Mono<Book> create(String bookName, String authorName, List<String> genres);
+    Mono<Book> findById(String id);
 
-    List<Book> findAll();
-    List<Book> findByName(String bookName);
+    Flux<Book> findAll();
+    Flux<Book> findByName(String bookName);
     boolean addComment(String bookName, String newComment);
     void updateBookNameById(String id, String bookName);
-    Book updateBook(String id, String bookName, String AuthorName, List<String> genres);
-    void delete(Book book);
-    List<Comment> getBookAllComments(String bookName);
+
+    Mono<Book> updateBook(String id, String bookName, String AuthorName, List<String> genres);
+
+    void delete(Mono<Book> book) throws ExecutionException, InterruptedException;
+
+    Flux<Comment> getBookAllComments(String bookName);
 }

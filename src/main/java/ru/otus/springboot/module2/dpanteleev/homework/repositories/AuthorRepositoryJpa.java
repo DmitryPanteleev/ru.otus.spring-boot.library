@@ -1,13 +1,12 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Author;
 
-import java.util.List;
+public interface AuthorRepositoryJpa extends ReactiveMongoRepository<Author, String> {
 
-public interface AuthorRepositoryJpa extends MongoRepository<Author, String> {
-
-    List<Author> findAuthorByFullName(String fullName);
+    Flux<Author> findAuthorByFullName(String fullName);
 
     void deleteAuthorByFullName(String fullName);
 

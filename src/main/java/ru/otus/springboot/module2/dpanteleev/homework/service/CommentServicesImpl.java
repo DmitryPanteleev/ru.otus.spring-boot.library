@@ -3,11 +3,10 @@ package ru.otus.springboot.module2.dpanteleev.homework.service;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 import ru.otus.springboot.module2.dpanteleev.homework.repositories.CommentRepositoryJpa;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommentServicesImpl implements CommentServices {
@@ -20,25 +19,25 @@ public class CommentServicesImpl implements CommentServices {
 
     @Transactional
     @Override
-    public Comment create(String comment, String bookId) {
+    public Mono<Comment> create(String comment, String bookId) {
         return repo.save(new Comment(comment, bookId));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Comment> findById(String id) {
+    public Mono<Comment> findById(String id) {
         return repo.findById(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Comment> findAll() {
+    public Flux<Comment> findAll() {
         return repo.findAll();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Comment> findByComment(String comment) {
+    public Flux<Comment> findByComment(String comment) {
         return repo.findCommentByComment(comment);
     }
 
@@ -46,8 +45,10 @@ public class CommentServicesImpl implements CommentServices {
     @Override
     public void updateCommentById(String id, String comment) {
         val entityComment = repo.findById(id);
-        entityComment.ifPresent(value -> value.setComment(comment));
-        repo.insert(entityComment.get());
+        if (entityComment.blockOptional().isPresent()) {
+            entityComment.blockOptional().get().setComment(comment);
+            repo.insert(entityComment.block());
+        }
     }
 
     @Transactional
