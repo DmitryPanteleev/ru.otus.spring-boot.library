@@ -23,9 +23,13 @@ public class BooksController {
         this.bookService = bookService;
     }
 
-    @RequestMapping("/books")
-    public Flux<Book> getAllBooks() {
-        return bookService.findAll();
+
+    @GetMapping({"/books", "/"})
+    public String listBooks(Model model) {
+        List<Book> bookList = bookService.findAll();
+        model.addAttribute("books", bookList);
+        return "list";
+
     }
 
     @RequestMapping("/books/book/edit")
