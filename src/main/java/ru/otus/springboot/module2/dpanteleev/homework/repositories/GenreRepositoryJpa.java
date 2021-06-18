@@ -1,13 +1,12 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Genre;
 
-import java.util.List;
+public interface GenreRepositoryJpa extends ReactiveMongoRepository<Genre, String> {
 
-public interface GenreRepositoryJpa extends MongoRepository<Genre, String> {
-
-    List<Genre> findGenreByGenre(String genre);
+    Flux<Genre> findGenreByGenre(String genre);
 
     void deleteGenreByGenre(String genre);
 }

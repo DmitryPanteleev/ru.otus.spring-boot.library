@@ -1,15 +1,17 @@
 package ru.otus.springboot.module2.dpanteleev.homework.rest;
 
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Book;
-import ru.otus.springboot.module2.dpanteleev.homework.exceptions.NotFoundBookException;
-
+import ru.otus.springboot.module2.dpanteleev.homework.service.BookService;
 
 import java.util.List;
-
+import java.util.concurrent.ExecutionException;
 
 @RestController
 public class BooksController {
@@ -22,17 +24,13 @@ public class BooksController {
     }
 
     @RequestMapping("/books")
-    public List<Book> getAllBooks() {
+    public Flux<Book> getAllBooks() {
         return bookService.findAll();
     }
 
     @RequestMapping("/books/book/edit")
-    public Book editBook(@RequestParam("id") String id) {
-        if (bookService.findById(id).isPresent()) {
-            return bookService.findById(id).get();
-        } else {
-            throw new NotFoundBookException();
-        }
+    public Mono<Book> editBook(@RequestParam("id") String id) {
+        return bookService.findById(id);
     }
 
     @RequestMapping("/books/book/save")
@@ -41,15 +39,22 @@ public class BooksController {
             @RequestParam("bookName") String bookName,
             @RequestParam("author") String author,
             @RequestParam("genres") List genres) {
-        bookService.updateBook(id, bookName, author, genres);
-
+        val response = bookService.updateBook(id, bookName, author, genres);
+        try {
+            response.toFuture().get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @RequestMapping("/books/book/delete")
     public void deleteBook(
             @RequestParam("id") String id) {
-        if (bookService.findById(id).isPresent()) {
-            bookService.delete(bookService.findById(id).get());
+        try {
+            bookService.delete(bookService.findById(id));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
+

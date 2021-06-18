@@ -18,6 +18,6 @@ public class MongoCascadeDeleteAuthorEventListener extends AbstractMongoEventLis
     public void onAfterDelete(AfterDeleteEvent<Author> event) {
         super.onAfterDelete(event);
         val books = bookRepositoryJpa.findBookByAuthorId(event.getSource().get("_id").toString());
-        books.forEach(bookRepositoryJpa::delete);
+        books.buffer().blockFirst().forEach(bookRepositoryJpa::delete);
     }
 }
