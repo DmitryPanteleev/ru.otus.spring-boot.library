@@ -1,15 +1,13 @@
 package ru.otus.springboot.module2.dpanteleev.homework.repositories;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.springboot.module2.dpanteleev.homework.domain.Comment;
 
 import java.util.List;
 
-public interface CommentRepositoryJpa extends MongoRepository<Comment, String> {
+public interface CommentRepositoryJpa extends JpaRepository<Comment, Long> {
 
     List<Comment> findCommentByComment(String comment);
-
-    List<Comment> findCommentByBookId(String bookId);
 
     void deleteCommentByComment(String comment);
 }

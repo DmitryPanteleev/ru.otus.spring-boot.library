@@ -1,9 +1,31 @@
 spring:
-  data:
-    :mongodb:
-      dataBase: library_db
-      port: 0
-      host: localhost
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: user
+    password: pass
+    data: securityData.sql
+    schema: securitySchema.sql
+    initialization-mode: always
+
+  seconddatasource:
+    url: jdbc:h2:mem:myNewSchema
+    driverClassName: org.h2.Driver
+    username: user
+    password: pass
+    data: data.sql
+    schema: dbSchema.sql
+    initialization-mode: always
+
+  h2:
+    console:
+      enabled: true
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
 
 mongock:
   #  runner-type: "ApplicationRunner" # default

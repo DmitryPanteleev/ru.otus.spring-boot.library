@@ -1,27 +1,27 @@
 package ru.otus.springboot.module2.dpanteleev.homework.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
 @Data
-@Document(collection = "genre")
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "genre")
 public class Genre {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @NotNull
+    @Column(name = "genre", nullable = false)
     private String genre;
 
     @Override
     public String toString() {
         return genre;
-    }
-
-    public Genre(String genre) {
-        this.genre = genre;
     }
 }

@@ -34,7 +34,7 @@ public class BooksController {
     }
 
     @GetMapping("/books/book/edit")
-    public String editBook(@RequestParam("id") String id, Model model) {
+    public String editBook(@RequestParam("id") Long id, Model model) {
         model.addAttribute("book", bookService.findById(id).orElseThrow(NotFoundBookException::new));
         model.addAttribute("authors", authorService.findAll());
         return "edit";
@@ -42,19 +42,19 @@ public class BooksController {
 
     @PostMapping("/books/book/edit")
     public String saveBook(
-            @RequestParam("id") String id,
+            @RequestParam("id") Long id,
             @RequestParam("bookName") String bookName,
             @RequestParam("author") String author,
             @RequestParam("genres") List genres,
             Model model) {
-        val newBook = bookService.updateBook(id, bookName, author, genres);
+        val newBook = bookService.updateBookNameById(id, bookName);
         model.addAttribute(newBook);
         return "redirect:/books";
     }
 
     @PostMapping("/books/book/delete")
     public String deleteBook(
-            @RequestParam("id") String id,
+            @RequestParam("id") Long id,
             @RequestParam("button") String button,
             Model model) {
         if (button.equals("delete") && bookService.findById(id).isPresent()){

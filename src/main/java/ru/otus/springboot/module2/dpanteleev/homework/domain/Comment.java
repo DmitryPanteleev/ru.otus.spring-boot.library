@@ -1,32 +1,27 @@
 package ru.otus.springboot.module2.dpanteleev.homework.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
 @Data
-@Document(collection = "comment")
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "comment")
+@Entity
 public class Comment {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @NotNull
+    @Column(name = "comment", nullable = false)
     private String comment;
-
-    @NotNull
-    private String bookId;
-
-    public Comment(String comment, String bookId) {
-        this.comment = comment;
-        this.bookId = bookId;
-    }
 
     @Override
     public String toString() {
         return comment;
     }
-
 }

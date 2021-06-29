@@ -8,12 +8,14 @@ import java.util.Optional;
 public interface AuthorService {
 
     Author create(String fullName);
-    Optional<Author> findById(String id);
+
+    Optional<Author> findById(long id);
 
     List<Author> findAll();
     List<Author> findByName(String fullName);
 
-    void updateNameById(String id, String name);
+    void updateNameById(long id, String name);
+
     void delete(Author author);
 
 }

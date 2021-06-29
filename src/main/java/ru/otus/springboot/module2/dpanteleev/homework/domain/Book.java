@@ -1,32 +1,43 @@
 package ru.otus.springboot.module2.dpanteleev.homework.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Data
-@Document(collection = "BOOK")
-public class Book {
+@Table(name = "BOOK")
+public class Book implements DBInterface {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @NotNull
+    @Column(name = "book_name", nullable = false)
     private String bookName;
 
-    @NotNull
+    @Fetch(FetchMode.JOIN)
+    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "author")
     private Author author;
 
-    @DBRef
+    @Fetch(FetchMode.SUBSELECT)
+    @ManyToMany(targetEntity = Genre.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "BOOK_GENRE", joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+//    @Column(name = "genres")
     private List<Genre> genres;
 
-    public Book(String bookName, Author author, List<Genre> genres) {
-        this.bookName = bookName;
-        this.author = author;
-        this.genres = genres;
-    }
+    @Fetch(FetchMode.JOIN)
+    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id")
+    private List<Comment> comments;
+
 }

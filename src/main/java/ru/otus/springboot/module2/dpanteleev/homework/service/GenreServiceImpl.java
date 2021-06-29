@@ -22,12 +22,12 @@ public class GenreServiceImpl implements GenreService {
     @Transactional
     @Override
     public Genre create(String genreName) {
-        return genreRepositoryJpa.insert(new Genre(genreName));
+        return genreRepositoryJpa.save(new Genre(0, genreName));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Genre> findById(String id) {
+    public Optional<Genre> findById(long id) {
         return genreRepositoryJpa.findById(id);
     }
 
@@ -45,16 +45,16 @@ public class GenreServiceImpl implements GenreService {
 
     @Transactional
     @Override
-    public void updateGenreById(String id, String genre) {
+    public void updateGenreById(long id, String genre) {
         val entityGenre = genreRepositoryJpa.findById(id);
         entityGenre.ifPresent(value -> value.setGenre(genre));
-        genreRepositoryJpa.insert(entityGenre.get());
+        genreRepositoryJpa.saveAndFlush(entityGenre.get());
 
     }
 
     @Transactional
     @Override
-    public void delete(Genre genre) {
+    public void deleteById(Genre genre) {
         genreRepositoryJpa.delete(genre);
     }
 }
