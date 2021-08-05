@@ -142,4 +142,9 @@ public class BookServiceImpl implements BookService {
             return commentRepo.findCommentByBookId(findByName(bookName).get(0).getId());
         } else return List.of();
     }
+
+    @Override
+    public long count() {
+        return bookRepositoryJpa.count();
+    }
 }

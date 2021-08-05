@@ -21,4 +21,6 @@ public interface BookService {
     Book updateBook(String id, String bookName, String AuthorName, List<String> genres);
     void delete(Book book);
     List<Comment> getBookAllComments(String bookName);
+
+    long count();
 }
