@@ -1,0 +1,29 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    ports:
+      - "8080:8080"
+    # Эти свойства перегружают соответствующие в application.yml
+    environment:
+      - SPRING_DATA_MONGODB_DATABASE=SpringBatchExampleDB
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_HOST=mongo
+    networks:
+      - nw
+  mongo:
+    # В идеале должна быть ещё и версия image
+    image: "mongo"
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - PUID=1000
+      - PGID=1000
+    networks:
+      - nw
+networks:
+  nw:

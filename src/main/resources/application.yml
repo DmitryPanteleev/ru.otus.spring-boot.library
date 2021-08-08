@@ -1,8 +1,8 @@
 spring:
   data:
-    :mongodb:
+    mongodb:
       dataBase: library_db
-      port: 0
+      port: 27017
       host: localhost
 
 management:
@@ -16,8 +16,8 @@ management:
   health:
     defaults:
       enabled: true
-mongock:
-  #  runner-type: "ApplicationRunner" # default
-  runner-type: "InitializingBean"
-  change-logs-scan-package:
-    - ru.otus.spring.mongock.changelog672758
+#mongock:
+#    runner-type: "ApplicationRunner" # default
+#  runner-type: "InitializingBean"
+#  change-logs-scan-package:
+#    - ru.otus.spring.mongock.changelog672758
