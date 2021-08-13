@@ -16,6 +16,24 @@ management:
   health:
     defaults:
       enabled: true
+
+logging:
+  file:
+    path: "/logs"
+    name: "debug-log.txt"
+  logback:
+    rollingpolicy:
+      max-file-size: 10
+      file-name-pattern: "logs/spring-boot-logger-%d{yyyy-MM-dd_HH-mm}.%i.log"
+  level:
+    console:
+      root: debug
+    file:
+      root: debug
+  charset:
+    console: UTF-8
+    file: UTF-8
+
 #mongock:
 #    runner-type: "ApplicationRunner" # default
 #  runner-type: "InitializingBean"
