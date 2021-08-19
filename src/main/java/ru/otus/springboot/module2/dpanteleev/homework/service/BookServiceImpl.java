@@ -1,5 +1,6 @@
 package ru.otus.springboot.module2.dpanteleev.homework.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,9 +38,9 @@ public class BookServiceImpl implements BookService {
         genres.forEach(s -> {
 
             if (genreService.findByName(s).isEmpty()) {
-                genreList.add( genreService.create(s));
+                genreList.add(genreService.create(s));
             } else {
-                genreList.add( genreService.findByName(s).get(0));
+                genreList.add(genreService.findByName(s).get(0));
             }
 
         });
@@ -58,10 +59,23 @@ public class BookServiceImpl implements BookService {
         return bookRepositoryJpa.findById(id);
     }
 
+    //    @HystrixCommand(commandProperties = {
+//            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000")
+//    })
+    @HystrixCommand(commandKey = "ck", fallbackMethod = "fbBook")
     @Transactional(readOnly = true)
     @Override
     public List<Book> findAll() {
+        try {
+            Thread.sleep((long) (Math.random() * 5) * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return bookRepositoryJpa.findAll();
+    }
+
+    private List<Book> fbBook() {
+        return List.of(new Book("Сервис временно не доступен", new Author("Извините"), List.of()));
     }
 
     @Transactional(readOnly = true)
