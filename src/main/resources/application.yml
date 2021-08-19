@@ -10,3 +10,11 @@ mongock:
   runner-type: "InitializingBean"
   change-logs-scan-package:
     - ru.otus.spring.mongock.changelog672758
+
+hystrix:
+  command:
+    ck:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 3000
